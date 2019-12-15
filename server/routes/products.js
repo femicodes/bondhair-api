@@ -1,13 +1,13 @@
 import { Router } from 'express';
+import multer from 'multer';
 import { validateRequest } from '../middleware/validateRequest';
 import ProductController from '../controllers/product';
-import { addProductSchema, getProductSchema } from './schema';
-import Product from '../models/Product';
+import { getProductSchema } from './schema';
 
 const productRoute = Router();
 
 productRoute.get('/products', ProductController.getAllProducts);
 productRoute.get('/products/:id', validateRequest(getProductSchema), ProductController.getOneProduct);
-productRoute.post('/products/:collectionId', validateRequest(addProductSchema), ProductController.addProduct);
+productRoute.post('/products/:collectionId', multer({ dest: 'temp/', limits: { fieldSize: 8 * 1024 * 1024 } }).single('hair'), ProductController.addProduct);
 
 export default productRoute;

@@ -1,6 +1,11 @@
+import fs from 'fs';
+import { config } from 'dotenv';
 import Product from '../models/Product';
 import Collection from '../models/Collection';
 import Response from '../utils/Response';
+import { uploadSettings } from '../utils/fileUpload';
+
+config();
 
 class ProductController {
   static async addProduct(req, res) {
@@ -10,12 +15,25 @@ class ProductController {
       const checkCollection = await Collection.findById(collectionId);
       if (!checkCollection) return Response.error(res, 409, 'Collection doesn\'t exist');
 
-      const product = req.body;
+      const { name, description, brand, price } = req.body;
 
-      const checkProduct = await Product.findOne({ name: product.name });
+      const checkProduct = await Product.findOne({ name });
       if (checkProduct) return Response.error(res, 409, 'Product already exists');
 
-      const newProduct = await new Product(product);
+      var params = {
+        ACL: 'public-read',
+        Bucket: process.env.AMAZON_BUCKET,
+        Body: fs.createReadStream(req.file.path),
+        Key: `hair/${req.file.originalname}`
+      };
+
+      uploadSettings(params, req.file.path);
+
+      const photoUrl = `${process.env.BASE_URL}/${params.Key}`;
+      const newProduct = await new Product({
+        name, description, brand, price, hairPhoto: photoUrl,
+      });
+
       await newProduct.save();
       await Collection.findByIdAndUpdate(collectionId, {
         $addToSet: { products: newProduct._id },

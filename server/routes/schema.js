@@ -16,6 +16,7 @@ export const getCollectionSchema = {
 export const addProductSchema = {
   body: {
     name: Joi.string().required(),
+    hairPhoto: Joi.string(),
     description: Joi.string().required(),
     brand: Joi.string().required(),
     price: Joi.number().required(),

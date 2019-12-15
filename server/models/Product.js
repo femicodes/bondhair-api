@@ -6,6 +6,10 @@ const ProductSchema = Schema({
     trim: true,
     required: [true, 'cannot be empty'],
   },
+  hairPhoto: {
+    type: String,
+    required: [true, 'cannot be empty'],
+  },
   description: {
     type: String,
     required: [true, 'cannot be empty'],
@@ -22,10 +26,10 @@ const ProductSchema = Schema({
     type: Number,
     default: 0
   },
-  reviews: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Review',
-  }],
+  /*  reviews: [{
+     type: Schema.Types.ObjectId,
+     ref: 'Review',
+   }], */
 }, { timestamps: true });
 
 const autoPopulateReviews = function (next) {
